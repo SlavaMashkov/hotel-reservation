@@ -15,6 +15,12 @@ const dbuser = "root"
 const dbpassword = "example"
 const dburi = "mongodb://localhost:27017"
 
+var config = fiber.Config{
+	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+		return ctx.JSON(map[string]string{"error": err.Error(), "code": "500"})
+	},
+}
+
 func main() {
 	listenPort := flag.String("listenPort", ":5000", "The listen port of the API server")
 	flag.Parse()
@@ -31,7 +37,7 @@ func main() {
 	}
 	defer client.Disconnect(context.TODO())
 
-	app := fiber.New()
+	app := fiber.New(config)
 	apiV1 := app.Group("/api/v1")
 
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
