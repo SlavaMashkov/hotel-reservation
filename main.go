@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/SlavaMashkov/hotel-reservation/api"
+	"github.com/SlavaMashkov/hotel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -31,13 +32,14 @@ func main() {
 	defer client.Disconnect(context.TODO())
 
 	app := fiber.New()
-
 	apiV1 := app.Group("/api/v1")
 
-	apiV1.Get("/user", api.HandleGetUsers)
-	apiV1.Get("/user/:id", api.HandleGetUser)
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
 
-	err := app.Listen(*listenPort)
+	apiV1.Get("/user", userHandler.HandleGetUsers)
+	apiV1.Get("/user/:id", userHandler.HandleGetUser)
+
+	err = app.Listen(*listenPort)
 	if err != nil {
 		slog.Error("server shutdown", slog.String("error", err.Error()))
 		return
