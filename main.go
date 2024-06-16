@@ -9,7 +9,11 @@ func main() {
 	app := fiber.New()
 	slog.Info("start server", slog.Int("port", 5000))
 	app.Get("/ping", handlePing())
-	app.Listen(":5000")
+	err := app.Listen(":5000")
+	if err != nil {
+		slog.Error("server shutdown", slog.String("error", err.Error()))
+		return
+	}
 }
 
 func handlePing() func(c *fiber.Ctx) error {
