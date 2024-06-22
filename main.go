@@ -17,7 +17,10 @@ const dburi = "mongodb://localhost:27017"
 
 var config = fiber.Config{
 	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-		return ctx.JSON(map[string]string{"error": err.Error(), "code": "500"})
+		return ctx.JSON(map[string]string{
+			"error": err.Error(),
+			"code":  "500",
+		})
 	},
 }
 
@@ -44,6 +47,7 @@ func main() {
 
 	apiV1.Get("/user", userHandler.HandleGetUsers)
 	apiV1.Get("/user/:id", userHandler.HandleGetUser)
+	apiV1.Post("/user", userHandler.HandlePostUser)
 
 	err = app.Listen(*listenPort)
 	if err != nil {

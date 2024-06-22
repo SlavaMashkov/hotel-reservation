@@ -10,16 +10,23 @@ type UserHandler struct {
 	userStore db.UserStore
 }
 
-func NewUserHandler(userStore db.UserStore) *UserHandler {
+func NewUserHandler(userStoreGetter db.UserStore) *UserHandler {
 	return &UserHandler{
-		userStore: userStore,
+		userStore: userStoreGetter,
 	}
 }
 
+func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
+	users, err := h.userStore.GetUsers(c.Context())
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(users)
+}
+
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
-	var (
-		id = c.Params("id")
-	)
+	id := c.Params("id")
 
 	user, err := h.userStore.GetUserByID(c.Context(), id)
 	if err != nil {
@@ -29,15 +36,22 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
-	user := types.User{
-		FirstName: "Slava",
-		LastName:  "Mashkov",
+func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
+	var params types.CreateUserParams
+
+	if err := c.BodyParser(&params); err != nil {
+		return err
 	}
 
-	users := []types.User{
-		user,
+	user, err := types.NewUser(&params)
+	if err != nil {
+		return err
 	}
 
-	return c.JSON(users)
+	insertedUser, err := h.userStore.InsertUser(c.Context(), user)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(insertedUser)
 }
