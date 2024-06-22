@@ -1,0 +1,20 @@
+
+### Get all user
+GET http://{{address}}:{{port}}/api/v1/user
+
+### Get user by id
+@userId = 66773bccbfe3c8cea6df4082
+GET http://{{address}}:{{port}}/api/v1/user/{{userId}}
+
+### Create new user
+POST http://{{address}}:{{port}}/api/v1/user
+Content-Type: application/json
+
+{
+  "firstName": "Slava",
+  "lastName": "Mashkov",
+  "email": "mashkov.vd@gmail.com",
+  "password": "test123"
+}
+
+
