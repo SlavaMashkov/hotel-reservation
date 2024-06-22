@@ -1,12 +1,18 @@
 package types
 
 import (
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
+	"regexp"
 )
 
 const (
-	bcryptCost = bcrypt.DefaultCost
+	bcryptCost         = bcrypt.DefaultCost
+	minFirstNameLength = 2
+	minLastNameLength  = 2
+	minPasswordLength  = 7
+	emailRegex         = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
 )
 
 type CreateUserParams struct {
@@ -14,6 +20,44 @@ type CreateUserParams struct {
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
+}
+
+func (params CreateUserParams) Validate() []string {
+	var errors []string
+
+	if len(params.FirstName) < minFirstNameLength {
+		errors = append(
+			errors,
+			fmt.Sprintf("first name must be at least %d characters long", minFirstNameLength),
+		)
+	}
+
+	if len(params.LastName) < minLastNameLength {
+		errors = append(
+			errors,
+			fmt.Sprintf("last name must be at least %d characters long", minLastNameLength),
+		)
+	}
+
+	if len(params.Password) < minPasswordLength {
+		errors = append(
+			errors,
+			fmt.Sprintf("password must be at least %d characters long", minPasswordLength),
+		)
+	}
+
+	if res := isEmailValid(params.Email); !res {
+		errors = append(
+			errors,
+			fmt.Sprintf("invalid email address"),
+		)
+	}
+
+	return errors
+}
+
+func isEmailValid(email string) bool {
+	return regexp.MustCompile(emailRegex).MatchString(email)
 }
 
 type User struct {
