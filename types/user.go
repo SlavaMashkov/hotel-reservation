@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"regexp"
@@ -63,14 +64,27 @@ func (params CreateUserParams) Validate() map[string]string {
 func (params UpdateUserParams) Validate() map[string]string {
 	errors := make(map[string]string)
 
-	if params.FirstName != "" {
+	if len(params.FirstName) > 0 {
 		validateFirstName(errors, params.FirstName)
 	}
-	if params.LastName != "" {
+	if len(params.LastName) > 0 {
 		validateLastName(errors, params.LastName)
 	}
 
 	return errors
+}
+
+func (params UpdateUserParams) ToBSON() bson.M {
+	b := bson.M{}
+
+	if len(params.FirstName) > 0 {
+		b["firstName"] = params.FirstName
+	}
+	if len(params.LastName) > 0 {
+		b["lastName"] = params.LastName
+	}
+
+	return b
 }
 
 func validateFirstName(errors map[string]string, firstName string) {

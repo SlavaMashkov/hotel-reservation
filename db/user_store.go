@@ -86,14 +86,7 @@ func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params t
 
 	filter := bson.M{"_id": oid}
 
-	update := bson.M{}
-
-	if params.FirstName != "" {
-		update["firstName"] = params.FirstName
-	}
-	if params.LastName != "" {
-		update["lastName"] = params.LastName
-	}
+	update := params.ToBSON()
 
 	result, err := store.collection.UpdateOne(ctx, filter, bson.M{"$set": update})
 	if err != nil {
