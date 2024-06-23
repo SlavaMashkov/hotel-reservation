@@ -14,10 +14,10 @@ const (
 )
 
 type HotelStore interface {
-	GetHotelByID(ctx context.Context, id string) (*types.Hotel, error)
+	GetHotelByID(ctx context.Context, hotelID string) (*types.Hotel, error)
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
-	UpdateHotel(ctx context.Context, id string, params types.UpdateHotelParams) error
-	AddRoom(ctx context.Context, id string, room *types.Room) error
+	UpdateHotel(ctx context.Context, hotelID string, params types.UpdateHotelParams) error
+	AppendRoom(ctx context.Context, hotelID string, room *types.Room) error
 }
 
 type MongoHotelStore struct {
@@ -34,10 +34,10 @@ func NewHotelStoreMongo(client *mongo.Client) *MongoHotelStore {
 	}
 }
 
-func (store *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.Hotel, error) {
+func (store *MongoHotelStore) GetHotelByID(ctx context.Context, hotelID string) (*types.Hotel, error) {
 	var hotel types.Hotel
 
-	oid, err := utility.IDToMongoOID(id)
+	oid, err := utility.IDToMongoOID(hotelID)
 	if err != nil {
 		return nil, err
 	}
@@ -61,13 +61,13 @@ func (store *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hote
 	return hotel, nil
 }
 
-func (store *MongoHotelStore) UpdateHotel(ctx context.Context, id string, params types.UpdateHotelParams) error {
-	oid, err := utility.IDToMongoOID(id)
+func (store *MongoHotelStore) UpdateHotel(ctx context.Context, hotelID string, params types.UpdateHotelParams) error {
+	hotelOID, err := utility.IDToMongoOID(hotelID)
 	if err != nil {
 		return err
 	}
 
-	filter := bson.M{"_id": oid}
+	filter := bson.M{"_id": hotelOID}
 
 	update := params.ToBSON()
 
@@ -83,13 +83,13 @@ func (store *MongoHotelStore) UpdateHotel(ctx context.Context, id string, params
 	return nil
 }
 
-func (store *MongoHotelStore) AddRoom(ctx context.Context, id string, room *types.Room) error {
-	oid, err := utility.IDToMongoOID(id)
+func (store *MongoHotelStore) AppendRoom(ctx context.Context, hotelID string, room *types.Room) error {
+	hotelOID, err := utility.IDToMongoOID(hotelID)
 	if err != nil {
 		return err
 	}
 
-	filter := bson.M{"_id": oid}
+	filter := bson.M{"_id": hotelOID}
 	update := bson.M{"$push": bson.M{"rooms": room.ID}}
 
 	_, err = store.collection.UpdateOne(ctx, filter, update)

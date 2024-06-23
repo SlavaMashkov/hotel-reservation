@@ -30,7 +30,7 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	user, err := h.userStore.GetUserByID(c.Context(), id)
+	user, err := h.userStore.GetUser(c.Context(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

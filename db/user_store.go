@@ -14,11 +14,11 @@ const (
 )
 
 type UserStore interface {
-	GetUserByID(context.Context, string) (*types.User, error)
-	GetUsers(context.Context) ([]*types.User, error)
-	InsertUser(context.Context, *types.User) (*types.User, error)
-	UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error
-	DeleteUser(context.Context, string) error
+	GetUsers(ctx context.Context) ([]*types.User, error)
+	GetUser(ctx context.Context, userID string) (*types.User, error)
+	InsertUser(ctx context.Context, user *types.User) (*types.User, error)
+	UpdateUser(ctx context.Context, userID string, params types.UpdateUserParams) error
+	DeleteUser(ctx context.Context, userID string) error
 }
 
 type MongoUserStore struct {
@@ -49,10 +49,10 @@ func (store *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error
 	return users, nil
 }
 
-func (store *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
+func (store *MongoUserStore) GetUser(ctx context.Context, userID string) (*types.User, error) {
 	var user types.User
 
-	oid, err := utility.IDToMongoOID(id)
+	oid, err := utility.IDToMongoOID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +76,8 @@ func (store *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (
 	return user, nil
 }
 
-func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error {
-	oid, err := utility.IDToMongoOID(id)
+func (store *MongoUserStore) UpdateUser(ctx context.Context, userID string, params types.UpdateUserParams) error {
+	oid, err := utility.IDToMongoOID(userID)
 	if err != nil {
 		return err
 	}
@@ -98,13 +98,13 @@ func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params t
 	return nil
 }
 
-func (store *MongoUserStore) DeleteUser(ctx context.Context, id string) error {
-	oid, err := utility.IDToMongoOID(id)
+func (store *MongoUserStore) DeleteUser(ctx context.Context, userID string) error {
+	userOID, err := utility.IDToMongoOID(userID)
 	if err != nil {
 		return err
 	}
 
-	result, err := store.collection.DeleteOne(ctx, bson.M{"_id": oid})
+	result, err := store.collection.DeleteOne(ctx, bson.M{"_id": userOID})
 	if err != nil {
 		return err
 	}

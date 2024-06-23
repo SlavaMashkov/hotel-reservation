@@ -47,7 +47,7 @@ func (store *MongoRoomStore) InsertRoom(ctx context.Context, hotelID string, roo
 
 	room.ID = result.InsertedID.(primitive.ObjectID)
 
-	err = store.hotelStore.AddRoom(ctx, hotelOID.Hex(), room)
+	err = store.hotelStore.AppendRoom(ctx, hotelOID.Hex(), room)
 	if err != nil {
 		return nil, err
 	}
