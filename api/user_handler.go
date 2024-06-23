@@ -46,13 +46,13 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
-	var params types.CreateUserParams
+	var params types.UserParams
 
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
 
-	if errs := params.Validate(); len(errs) > 0 {
+	if errs := params.ValidateCreate(); len(errs) > 0 {
 		return c.JSON(errs)
 	}
 
@@ -71,12 +71,16 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 
 func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	var (
-		params types.CreateUserParams
+		params types.UserParams
 		id     = c.Params("id")
 	)
 
 	if err := c.BodyParser(&params); err != nil {
 		return err
+	}
+
+	if errs := params.ValidateUpdate(); len(errs) > 0 {
+		return c.JSON(errs)
 	}
 
 	if err := h.userStore.UpdateUser(c.Context(), id, params); err != nil {

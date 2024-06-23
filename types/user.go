@@ -15,39 +15,6 @@ const (
 	emailRegex         = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
 )
 
-type CreateUserParams struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-}
-
-func (params CreateUserParams) Validate() map[string]string {
-	errors := make(map[string]string)
-
-	if len(params.FirstName) < minFirstNameLength {
-		errors["firstName"] = fmt.Sprintf("first name must be at least %d characters long", minFirstNameLength)
-	}
-
-	if len(params.LastName) < minLastNameLength {
-		errors["lastName"] = fmt.Sprintf("last name must be at least %d characters long", minLastNameLength)
-	}
-
-	if len(params.Password) < minPasswordLength {
-		errors["password"] = fmt.Sprintf("password must be at least %d characters long", minPasswordLength)
-	}
-
-	if res := isEmailValid(params.Email); !res {
-		errors["email"] = fmt.Sprintf("invalid email address")
-	}
-
-	return errors
-}
-
-func isEmailValid(email string) bool {
-	return regexp.MustCompile(emailRegex).MatchString(email)
-}
-
 type User struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	FirstName         string             `bson:"firstName" json:"firstName"`
@@ -56,7 +23,14 @@ type User struct {
 	EncryptedPassword string             `bson:"EncryptedPassword" json:"-"`
 }
 
-func NewUser(params *CreateUserParams) (*User, error) {
+type UserParams struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
+
+func NewUser(params *UserParams) (*User, error) {
 	encryptedPassword, err := EncryptPassword(params.Password)
 	if err != nil {
 		return nil, err
@@ -68,6 +42,64 @@ func NewUser(params *CreateUserParams) (*User, error) {
 		Email:             params.Email,
 		EncryptedPassword: encryptedPassword,
 	}, nil
+}
+
+func (params UserParams) ValidateCreate() map[string]string {
+	errors := make(map[string]string)
+
+	validateFirstName(errors, params.FirstName)
+	validateLastName(errors, params.LastName)
+	validatePassword(errors, params.Password)
+	validateEmail(errors, params.Email)
+
+	return errors
+}
+
+func (params UserParams) ValidateUpdate() map[string]string {
+	errors := make(map[string]string)
+
+	if params.FirstName != "" {
+		validateFirstName(errors, params.FirstName)
+	}
+	if params.LastName != "" {
+		validateLastName(errors, params.LastName)
+	}
+	if params.Password != "" {
+		validatePassword(errors, params.Password)
+	}
+	if params.Email != "" {
+		validateEmail(errors, params.Email)
+	}
+
+	return errors
+}
+
+func validateFirstName(errors map[string]string, firstName string) {
+	if len(firstName) < minFirstNameLength {
+		errors["firstName"] = fmt.Sprintf("first name must be at least %d characters long", minFirstNameLength)
+	}
+}
+
+func validateLastName(errors map[string]string, lastName string) {
+	if len(lastName) < minLastNameLength {
+		errors["lastName"] = fmt.Sprintf("last name must be at least %d characters long", minLastNameLength)
+	}
+}
+
+func validatePassword(errors map[string]string, password string) {
+	if len(password) < minPasswordLength {
+		errors["password"] = fmt.Sprintf("password must be at least %d characters long", minPasswordLength)
+	}
+}
+
+func validateEmail(errors map[string]string, email string) {
+	if res := isEmailValid(email); !res {
+		errors["email"] = fmt.Sprintf("invalid email address")
+	}
+}
+
+func isEmailValid(email string) bool {
+	return regexp.MustCompile(emailRegex).MatchString(email)
 }
 
 func EncryptPassword(password string) (string, error) {

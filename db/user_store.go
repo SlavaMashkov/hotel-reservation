@@ -17,7 +17,7 @@ type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
-	UpdateUser(ctx context.Context, id string, params types.CreateUserParams) error
+	UpdateUser(ctx context.Context, id string, params types.UserParams) error
 	DeleteUser(context.Context, string) error
 }
 
@@ -77,8 +77,7 @@ func (store *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (
 	return user, nil
 }
 
-// UpdateUser TODO: params validation
-func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.CreateUserParams) error {
+func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UserParams) error {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		slog.Error("could not convert to ObjectID", slog.String("id", id))
