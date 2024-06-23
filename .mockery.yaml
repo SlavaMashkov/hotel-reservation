@@ -1,0 +1,11 @@
+with-expecter: True
+dir: mocks/{{ replaceAll .InterfaceDirRelative "internal" "internal_" }}
+
+mockname: "{{.InterfaceName}}"
+outpkg: "mocks"
+filename: "{{.InterfaceName}}.go"
+all: True
+packages:
+  github.com/SlavaMashkov/hotel-reservation:
+    config:
+      recursive: True

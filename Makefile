@@ -7,5 +7,8 @@ build:
 run: build
 	./bin/main
 
-test:
+mockery:
+	mockery
+
+test: mockery
 	go test -v ./... -count=1
