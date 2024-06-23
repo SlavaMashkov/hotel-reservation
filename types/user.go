@@ -57,7 +57,7 @@ type User struct {
 }
 
 func NewUser(params *CreateUserParams) (*User, error) {
-	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcryptCost)
+	encryptedPassword, err := EncryptPassword(params.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +66,15 @@ func NewUser(params *CreateUserParams) (*User, error) {
 		FirstName:         params.FirstName,
 		LastName:          params.LastName,
 		Email:             params.Email,
-		EncryptedPassword: string(encryptedPassword),
+		EncryptedPassword: encryptedPassword,
 	}, nil
+}
+
+func EncryptPassword(password string) (string, error) {
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcryptCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(encryptedPassword), nil
 }

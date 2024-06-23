@@ -69,6 +69,33 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 	return c.JSON(insertedUser)
 }
 
+func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
+	var (
+		params types.CreateUserParams
+		id     = c.Params("id")
+	)
+
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+
+	if err := h.userStore.UpdateUser(c.Context(), id, params); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": "user not found",
+				"id":      id,
+			})
+		}
+
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "user updated",
+		"id":      id,
+	})
+}
+
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 

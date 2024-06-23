@@ -17,6 +17,15 @@ Content-Type: application/json
   "password": "test123"
 }
 
+### Update user by id
+PUT http://{{address}}:{{port}}/api/v1/user/{{userId}}
+Content-Type: application/json
+
+{
+  "firstName": "Dima",
+  "password": "test345"
+}
+
 ### Delete user by id
 DELETE http://{{address}}:{{port}}/api/v1/user/{{userId}}
 
