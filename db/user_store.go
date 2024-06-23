@@ -27,7 +27,7 @@ type MongoUserStore struct {
 }
 
 func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
-	collection := client.Database(dbname).Collection(userCollection)
+	collection := client.Database(NAME).Collection(userCollection)
 
 	return &MongoUserStore{
 		client:     client,

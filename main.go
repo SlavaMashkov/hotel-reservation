@@ -11,10 +11,6 @@ import (
 	"log/slog"
 )
 
-const dbuser = "root"
-const dbpassword = "example"
-const dburi = "mongodb://localhost:27017"
-
 var config = fiber.Config{
 	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 		return ctx.JSON(map[string]string{
@@ -29,11 +25,12 @@ func main() {
 	flag.Parse()
 
 	credentials := options.Credential{
-		Username: dbuser,
-		Password: dbpassword,
+		Username: db.USERNAME,
+		Password: db.PASSWORD,
 	}
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi).SetAuth(credentials))
+	// TODO: extract connection initialization logic
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.URI).SetAuth(credentials))
 	if err != nil {
 		slog.Error("client creation", slog.String("error", err.Error()))
 		return
