@@ -23,14 +23,19 @@ type User struct {
 	EncryptedPassword string             `bson:"EncryptedPassword" json:"-"`
 }
 
-type UserParams struct {
+type CreateUserParams struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 }
 
-func NewUser(params *UserParams) (*User, error) {
+type UpdateUserParams struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+func NewUser(params *CreateUserParams) (*User, error) {
 	encryptedPassword, err := EncryptPassword(params.Password)
 	if err != nil {
 		return nil, err
@@ -44,7 +49,7 @@ func NewUser(params *UserParams) (*User, error) {
 	}, nil
 }
 
-func (params UserParams) ValidateCreate() map[string]string {
+func (params CreateUserParams) Validate() map[string]string {
 	errors := make(map[string]string)
 
 	validateFirstName(errors, params.FirstName)
@@ -55,7 +60,7 @@ func (params UserParams) ValidateCreate() map[string]string {
 	return errors
 }
 
-func (params UserParams) ValidateUpdate() map[string]string {
+func (params UpdateUserParams) Validate() map[string]string {
 	errors := make(map[string]string)
 
 	if params.FirstName != "" {
@@ -63,12 +68,6 @@ func (params UserParams) ValidateUpdate() map[string]string {
 	}
 	if params.LastName != "" {
 		validateLastName(errors, params.LastName)
-	}
-	if params.Password != "" {
-		validatePassword(errors, params.Password)
-	}
-	if params.Email != "" {
-		validateEmail(errors, params.Email)
 	}
 
 	return errors

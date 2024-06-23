@@ -17,7 +17,7 @@ type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
-	UpdateUser(ctx context.Context, id string, params types.UserParams) error
+	UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error
 	DeleteUser(context.Context, string) error
 }
 
@@ -77,7 +77,7 @@ func (store *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (
 	return user, nil
 }
 
-func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UserParams) error {
+func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		slog.Error("could not convert to ObjectID", slog.String("id", id))
@@ -93,17 +93,6 @@ func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params t
 	}
 	if params.LastName != "" {
 		update["lastName"] = params.LastName
-	}
-	if params.Email != "" {
-		update["email"] = params.Email
-	}
-	if params.Password != "" {
-		encryptPassword, err := types.EncryptPassword(params.Password)
-		if err != nil {
-			return err
-		}
-
-		update["EncryptedPassword"] = encryptPassword
 	}
 
 	result, err := store.collection.UpdateOne(ctx, filter, bson.M{"$set": update})
