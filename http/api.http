@@ -1,9 +1,9 @@
+@userId = 6678067e5cd779df11cd6512
 
 ### Get all user
 GET http://{{address}}:{{port}}/api/v1/user
 
 ### Get user by id
-@userId = 66773bccbfe3c8cea6df4082
 GET http://{{address}}:{{port}}/api/v1/user/{{userId}}
 
 ### Create new user
@@ -17,4 +17,6 @@ Content-Type: application/json
   "password": "test123"
 }
 
+### Delete user by id
+DELETE http://{{address}}:{{port}}/api/v1/user/{{userId}}
 
