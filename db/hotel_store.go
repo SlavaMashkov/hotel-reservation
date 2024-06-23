@@ -17,6 +17,7 @@ type HotelStore interface {
 	GetHotelByID(ctx context.Context, id string) (*types.Hotel, error)
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotel(ctx context.Context, id string, params types.UpdateHotelParams) error
+	AddRoom(ctx context.Context, id string, room *types.Room) error
 }
 
 type MongoHotelStore struct {
@@ -79,6 +80,24 @@ func (store *MongoHotelStore) UpdateHotel(ctx context.Context, id string, params
 
 	if result.MatchedCount == 0 {
 		return mongo.ErrNoDocuments
+	}
+
+	return nil
+}
+
+func (store *MongoHotelStore) AddRoom(ctx context.Context, id string, room *types.Room) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		slog.Error("could not convert to ObjectID", slog.String("id", id))
+		return err
+	}
+
+	filter := bson.M{"_id": oid}
+	update := bson.M{"$push": bson.M{"rooms": room.ID}}
+
+	_, err = store.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
 	}
 
 	return nil
