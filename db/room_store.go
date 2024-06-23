@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"github.com/SlavaMashkov/hotel-reservation/types"
+	"github.com/SlavaMashkov/hotel-reservation/utility"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log/slog"
 )
 
 const (
@@ -33,9 +33,8 @@ func NewRoomStoreMongo(client *mongo.Client) *MongoRoomStore {
 }
 
 func (store *MongoRoomStore) InsertRoom(ctx context.Context, hotelID string, room *types.Room) (*types.Room, error) {
-	hotelOID, err := primitive.ObjectIDFromHex(hotelID)
+	hotelOID, err := utility.IDToMongoOID(hotelID)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", hotelID))
 		return nil, err
 	}
 

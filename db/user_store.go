@@ -3,10 +3,10 @@ package db
 import (
 	"context"
 	"github.com/SlavaMashkov/hotel-reservation/types"
+	"github.com/SlavaMashkov/hotel-reservation/utility"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log/slog"
 )
 
 const (
@@ -52,9 +52,8 @@ func (store *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error
 func (store *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
 	var user types.User
 
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := utility.IDToMongoOID(id)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", id))
 		return nil, err
 	}
 
@@ -78,9 +77,8 @@ func (store *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (
 }
 
 func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := utility.IDToMongoOID(id)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", id))
 		return err
 	}
 
@@ -101,9 +99,8 @@ func (store *MongoUserStore) UpdateUser(ctx context.Context, id string, params t
 }
 
 func (store *MongoUserStore) DeleteUser(ctx context.Context, id string) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := utility.IDToMongoOID(id)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", id))
 		return err
 	}
 

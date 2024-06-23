@@ -3,10 +3,10 @@ package db
 import (
 	"context"
 	"github.com/SlavaMashkov/hotel-reservation/types"
+	"github.com/SlavaMashkov/hotel-reservation/utility"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log/slog"
 )
 
 const (
@@ -37,9 +37,8 @@ func NewHotelStoreMongo(client *mongo.Client) *MongoHotelStore {
 func (store *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.Hotel, error) {
 	var hotel types.Hotel
 
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := utility.IDToMongoOID(id)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", id))
 		return nil, err
 	}
 
@@ -63,9 +62,8 @@ func (store *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hote
 }
 
 func (store *MongoHotelStore) UpdateHotel(ctx context.Context, id string, params types.UpdateHotelParams) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := utility.IDToMongoOID(id)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", id))
 		return err
 	}
 
@@ -86,9 +84,8 @@ func (store *MongoHotelStore) UpdateHotel(ctx context.Context, id string, params
 }
 
 func (store *MongoHotelStore) AddRoom(ctx context.Context, id string, room *types.Room) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	oid, err := utility.IDToMongoOID(id)
 	if err != nil {
-		slog.Error("could not convert to ObjectID", slog.String("id", id))
 		return err
 	}
 
