@@ -1,6 +1,9 @@
 air:
 	air
 
+seed:
+	go run scripts/seed.go
+
 build:
 	go build -o bin/main.exe
 
