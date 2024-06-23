@@ -5,6 +5,7 @@ import (
 	"github.com/SlavaMashkov/hotel-reservation/types"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log/slog"
 )
 
 const (
@@ -12,7 +13,7 @@ const (
 )
 
 type RoomStore interface {
-	InsertRoom(ctx context.Context, room *types.Room) (*types.Room, error)
+	InsertRoom(ctx context.Context, hotelID string, room *types.Room) (*types.Room, error)
 }
 
 type MongoRoomStore struct {
@@ -31,7 +32,15 @@ func NewRoomStoreMongo(client *mongo.Client) *MongoRoomStore {
 	}
 }
 
-func (store *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*types.Room, error) {
+func (store *MongoRoomStore) InsertRoom(ctx context.Context, hotelID string, room *types.Room) (*types.Room, error) {
+	hotelOID, err := primitive.ObjectIDFromHex(hotelID)
+	if err != nil {
+		slog.Error("could not convert to ObjectID", slog.String("id", hotelID))
+		return nil, err
+	}
+
+	room.HotelID = hotelOID
+
 	result, err := store.collection.InsertOne(ctx, room)
 	if err != nil {
 		return nil, err
@@ -39,16 +48,7 @@ func (store *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (
 
 	room.ID = result.InsertedID.(primitive.ObjectID)
 
-	hotel, err := store.hotelStore.GetHotelByID(ctx, room.HotelID.Hex())
-	if err != nil {
-		return nil, err
-	}
-
-	hotel.Rooms = append(hotel.Rooms, room.ID)
-
-	err = store.hotelStore.UpdateHotel(ctx, room.HotelID.Hex(), types.UpdateHotelParams{
-		Rooms: hotel.Rooms,
-	})
+	err = store.hotelStore.AddRoom(ctx, hotelOID.Hex(), room)
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/SlavaMashkov/hotel-reservation/db"
 	"github.com/SlavaMashkov/hotel-reservation/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log/slog"
@@ -33,6 +34,7 @@ func main() {
 	hotel := types.Hotel{
 		Name:     "Hilton",
 		Location: "London",
+		Rooms:    make([]primitive.ObjectID, 0),
 	}
 
 	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
@@ -55,9 +57,7 @@ func main() {
 	}
 
 	for _, room := range rooms {
-		room.HotelID = insertedHotel.ID
-
-		_, err = roomStore.InsertRoom(ctx, &room)
+		_, err = roomStore.InsertRoom(ctx, insertedHotel.ID.Hex(), &room)
 		if err != nil {
 			slog.Error("room insertion", slog.String("error", err.Error()))
 			return
