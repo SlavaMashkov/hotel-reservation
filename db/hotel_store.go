@@ -14,7 +14,8 @@ const (
 )
 
 type HotelStore interface {
-	GetHotelByID(ctx context.Context, hotelID string) (*types.Hotel, error)
+	GetHotels(ctx context.Context) ([]*types.Hotel, error)
+	GetHotel(ctx context.Context, hotelID string) (*types.Hotel, error)
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotel(ctx context.Context, hotelID string, params types.UpdateHotelParams) error
 	AppendRoom(ctx context.Context, hotelID string, room *types.Room) error
@@ -34,7 +35,21 @@ func NewMongoHotelStore(client *mongo.Client) *MongoHotelStore {
 	}
 }
 
-func (store *MongoHotelStore) GetHotelByID(ctx context.Context, hotelID string) (*types.Hotel, error) {
+func (store *MongoHotelStore) GetHotels(ctx context.Context) ([]*types.Hotel, error) {
+	cur, err := store.collection.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	var hotels []*types.Hotel
+	if err = cur.All(ctx, &hotels); err != nil {
+		return nil, err
+	}
+
+	return hotels, nil
+}
+
+func (store *MongoHotelStore) GetHotel(ctx context.Context, hotelID string) (*types.Hotel, error) {
 	var hotel types.Hotel
 
 	oid, err := utility.IDToMongoOID(hotelID)
