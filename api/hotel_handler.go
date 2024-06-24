@@ -7,11 +7,13 @@ import (
 
 type HotelHandler struct {
 	hotelStore db.HotelStore
+	roomStore  db.RoomStore
 }
 
-func NewHotelHandler(hotelStore db.HotelStore) *HotelHandler {
+func NewHotelHandler(hotelStore db.HotelStore, roomStore db.RoomStore) *HotelHandler {
 	return &HotelHandler{
 		hotelStore: hotelStore,
+		roomStore:  roomStore,
 	}
 }
 

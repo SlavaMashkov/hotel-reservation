@@ -30,18 +30,29 @@ func main() {
 	}
 
 	// TODO: extract connection initialization logic
+	// Region connection initialization logic
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.URI).SetAuth(credentials))
 	if err != nil {
 		slog.Error("client creation", slog.String("error", err.Error()))
 		return
 	}
 	defer client.Disconnect(context.TODO())
+	// End
 
-	app := fiber.New(config)
-	apiV1 := app.Group("/api/v1")
+	// TODO: extract handlers initialization logic
+	// Region handlers initialization logic
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
-	hotelHandler := api.NewHotelHandler(db.NewMongoHotelStore(client))
+	var (
+		userStore  = db.NewMongoUserStore(client)
+		hotelStore = db.NewMongoHotelStore(client)
+		roomStore  = db.NewMongoRoomStore(client)
+
+		userHandler  = api.NewUserHandler(userStore)
+		hotelHandler = api.NewHotelHandler(hotelStore, roomStore)
+
+		app   = fiber.New(config)
+		apiV1 = app.Group("/api/v1")
+	)
 
 	apiV1.Get("/user", userHandler.HandleGetUsers)
 	apiV1.Get("/user/:id", userHandler.HandleGetUser)
@@ -50,6 +61,7 @@ func main() {
 	apiV1.Delete("/user/:id", userHandler.HandleDeleteUser)
 
 	apiV1.Get("/hotel", hotelHandler.HandleGetHotels)
+	// End
 
 	err = app.Listen(*listenPort)
 	if err != nil {
