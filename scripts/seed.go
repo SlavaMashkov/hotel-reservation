@@ -71,8 +71,8 @@ func initVars() {
 		return
 	}
 
-	hotelStore = db.NewHotelStoreMongo(client)
-	roomStore = db.NewRoomStoreMongo(client)
+	hotelStore = db.NewMongoHotelStore(client)
+	roomStore = db.NewMongoRoomStore(client)
 }
 
 func seedHotel(hotel *types.Hotel) (*types.Hotel, error) {
