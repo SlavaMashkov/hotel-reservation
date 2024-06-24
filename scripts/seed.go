@@ -23,31 +23,29 @@ func main() {
 	initVars()
 	defer client.Disconnect(context.TODO())
 
-	hotel := types.Hotel{
-		Name:     "Hilton",
-		Location: "London",
-		Rooms:    make([]primitive.ObjectID, 0),
-	}
-
-	insertedHotel, err := seedHotel(&hotel)
-	if err != nil {
-		return
-	}
-
-	rooms := []types.Room{
+	hotels := []types.Hotel{
 		{
-			Type:      types.Deluxe,
-			BasePrice: 100,
+			Name:     "Hilton",
+			Location: "London",
+			Rooms:    make([]primitive.ObjectID, 0),
 		},
 		{
-			Type:      types.Single,
-			BasePrice: 50,
+			Name:     "Radisson",
+			Location: "Paris",
+			Rooms:    make([]primitive.ObjectID, 0),
+		},
+		{
+			Name:     "Inn",
+			Location: "New York",
+			Rooms:    make([]primitive.ObjectID, 0),
 		},
 	}
 
-	err = seedRooms(rooms, insertedHotel)
-	if err != nil {
-		return
+	for _, hotel := range hotels {
+		_, err := seedHotel(&hotel)
+		if err != nil {
+			return
+		}
 	}
 
 	slog.Info("database seeded")
@@ -75,7 +73,6 @@ func initVars() {
 
 	hotelStore = db.NewHotelStoreMongo(client)
 	roomStore = db.NewRoomStoreMongo(client)
-
 }
 
 func seedHotel(hotel *types.Hotel) (*types.Hotel, error) {
@@ -86,6 +83,23 @@ func seedHotel(hotel *types.Hotel) (*types.Hotel, error) {
 	}
 
 	slog.Info("hotel inserted", slog.String("id", insertedHotel.ID.Hex()))
+
+	rooms := []types.Room{
+		{
+			Type:      types.Deluxe,
+			BasePrice: 100,
+		},
+		{
+			Type:      types.Single,
+			BasePrice: 50,
+		},
+	}
+
+	err = seedRooms(rooms, insertedHotel)
+	if err != nil {
+		return nil, err
+	}
+
 	return insertedHotel, nil
 }
 
