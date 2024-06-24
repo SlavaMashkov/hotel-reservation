@@ -1,0 +1,2 @@
+### Get all hotels
+GET http://{{address}}:{{port}}/api/v1/hotel

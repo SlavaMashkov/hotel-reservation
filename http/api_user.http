@@ -1,4 +1,4 @@
-@userId = 6678067e5cd779df11cd6512
+@userId = 667824a9202b86c762e15112
 
 ### Get all user
 GET http://{{address}}:{{port}}/api/v1/user
@@ -22,8 +22,7 @@ PUT http://{{address}}:{{port}}/api/v1/user/{{userId}}
 Content-Type: application/json
 
 {
-  "firstName": "Dima",
-  "password": "test345"
+  "firstName": "Dima"
 }
 
 ### Delete user by id
