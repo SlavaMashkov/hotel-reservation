@@ -1,2 +1,8 @@
 ### Get all hotels
 GET http://{{address}}:{{port}}/api/v1/hotel
+
+### Get all hotels with rooms description
+GET http://{{address}}:{{port}}/api/v1/hotel?rooms=true
+
+### Get all hotels with rating filter
+GET http://{{address}}:{{port}}/api/v1/hotel?minRating=4
