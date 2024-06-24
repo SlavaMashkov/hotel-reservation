@@ -10,12 +10,18 @@ type Hotel struct {
 	Name     string               `bson:"name" json:"name"`
 	Location string               `bson:"location" json:"location"`
 	Rooms    []primitive.ObjectID `bson:"rooms" json:"rooms"`
+	Rating   int                  `bson:"rating" json:"rating"`
 }
 
 type UpdateHotelParams struct {
 	Name     string
 	Location string
 	Rooms    []primitive.ObjectID
+}
+
+type QueryHotelParams struct {
+	Rooms     bool
+	MinRating int
 }
 
 func (params UpdateHotelParams) ToBSON() bson.M {

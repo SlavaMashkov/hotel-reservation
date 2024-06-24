@@ -28,16 +28,19 @@ func main() {
 			Name:     "Hilton",
 			Location: "London",
 			Rooms:    make([]primitive.ObjectID, 0),
+			Rating:   4,
 		},
 		{
 			Name:     "Radisson",
 			Location: "Paris",
 			Rooms:    make([]primitive.ObjectID, 0),
+			Rating:   5,
 		},
 		{
 			Name:     "Inn",
 			Location: "New York",
 			Rooms:    make([]primitive.ObjectID, 0),
+			Rating:   3,
 		},
 	}
 
