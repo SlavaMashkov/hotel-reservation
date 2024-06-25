@@ -89,12 +89,28 @@ func seedHotel(hotel *types.Hotel) (*types.Hotel, error) {
 
 	rooms := []types.Room{
 		{
-			Type:      types.Deluxe,
-			BasePrice: 100,
+			Type:      types.Economy,
+			Size:      1,
+			BasePrice: 50,
+			SeaSight:  false,
 		},
 		{
-			Type:      types.Single,
-			BasePrice: 50,
+			Type:      types.Standard,
+			Size:      3,
+			BasePrice: 75,
+			SeaSight:  false,
+		},
+		{
+			Type:      types.Premium,
+			Size:      2,
+			BasePrice: 100,
+			SeaSight:  true,
+		},
+		{
+			Type:      types.Deluxe,
+			Size:      4,
+			BasePrice: 150,
+			SeaSight:  true,
 		},
 	}
 
