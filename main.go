@@ -61,6 +61,7 @@ func main() {
 	apiV1.Delete("/user/:id", userHandler.HandleDeleteUser)
 
 	apiV1.Get("/hotel", hotelHandler.HandleGetHotels)
+	apiV1.Get("/hotel/:id/rooms", hotelHandler.GetHotelRooms)
 	// End
 
 	err = app.Listen(*listenPort)

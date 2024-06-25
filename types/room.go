@@ -1,6 +1,9 @@
 package types
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type RoomType int
 
@@ -18,4 +21,18 @@ type Room struct {
 	BasePrice float64            `bson:"basePrice" json:"basePrice"`
 	Price     float64            `bson:"price" json:"price"`
 	HotelID   primitive.ObjectID `bson:"hotelID" json:"hotelID"`
+}
+
+type QueryRoomParams struct {
+	HotelID primitive.ObjectID `json:"hotelID"`
+}
+
+func (query QueryRoomParams) ToBSON() bson.M {
+	b := bson.M{}
+
+	if query.HotelID != primitive.NilObjectID {
+		b["hotelID"] = query.HotelID
+	}
+
+	return b
 }
