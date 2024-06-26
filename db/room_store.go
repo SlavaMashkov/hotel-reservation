@@ -64,7 +64,7 @@ func (store *MongoRoomStore) GetRooms(ctx context.Context, query *types.QueryRoo
 		return nil, err
 	}
 
-	var rooms []*types.Room
+	rooms := make([]*types.Room, 0)
 	if err = result.All(ctx, &rooms); err != nil {
 		return nil, err
 	}

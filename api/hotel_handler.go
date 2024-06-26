@@ -53,12 +53,5 @@ func (h *HotelHandler) GetHotelRooms(c *fiber.Ctx) error {
 		return err
 	}
 
-	if len(rooms) == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "rooms not found",
-			"id":      id,
-		})
-	}
-
 	return c.JSON(rooms)
 }
