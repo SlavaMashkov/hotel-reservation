@@ -9,14 +9,12 @@ import (
 )
 
 type HotelHandler struct {
-	hotelStore db.HotelStore
-	roomStore  db.RoomStore
+	store *db.Store
 }
 
-func NewHotelHandler(hotelStore db.HotelStore, roomStore db.RoomStore) *HotelHandler {
+func NewHotelHandler(store *db.Store) *HotelHandler {
 	return &HotelHandler{
-		hotelStore: hotelStore,
-		roomStore:  roomStore,
+		store: store,
 	}
 }
 
@@ -28,7 +26,7 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 
 	slog.Info("query params", slog.Any("value", queryParams))
 
-	hotels, err := h.hotelStore.GetHotels(c.Context())
+	hotels, err := h.store.HotelStore.GetHotels(c.Context())
 	if err != nil {
 		return err
 	}
@@ -48,7 +46,7 @@ func (h *HotelHandler) GetHotelRooms(c *fiber.Ctx) error {
 		HotelID: oid,
 	}
 
-	rooms, err := h.roomStore.GetRooms(c.Context(), queryParams)
+	rooms, err := h.store.RoomStore.GetRooms(c.Context(), queryParams)
 	if err != nil {
 		return err
 	}

@@ -47,8 +47,14 @@ func main() {
 		hotelStore = db.NewMongoHotelStore(client)
 		roomStore  = db.NewMongoRoomStore(client)
 
-		userHandler  = api.NewUserHandler(userStore)
-		hotelHandler = api.NewHotelHandler(hotelStore, roomStore)
+		store = &db.Store{
+			UserStore:  userStore,
+			HotelStore: hotelStore,
+			RoomStore:  roomStore,
+		}
+
+		userHandler  = api.NewUserHandler(store)
+		hotelHandler = api.NewHotelHandler(store)
 
 		app   = fiber.New(config)
 		apiV1 = app.Group("/api/v1")
