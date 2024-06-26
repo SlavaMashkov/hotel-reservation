@@ -1,3 +1,5 @@
+@hotelId=667b354b9899c19ae7dff6d6
+
 ### Get all hotels
 GET http://{{address}}:{{port}}/api/v1/hotel
 
@@ -6,3 +8,6 @@ GET http://{{address}}:{{port}}/api/v1/hotel?rooms=true
 
 ### Get all hotels with rating filter
 GET http://{{address}}:{{port}}/api/v1/hotel?minRating=4
+
+### Get all hotels with rooms description
+GET http://{{address}}:{{port}}/api/v1/hotel/{{hotelId}}/rooms
