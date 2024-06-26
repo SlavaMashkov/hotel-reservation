@@ -1,10 +1,12 @@
 package api
 
 import (
+	"errors"
 	"github.com/SlavaMashkov/hotel-reservation/db"
 	"github.com/SlavaMashkov/hotel-reservation/types"
 	"github.com/SlavaMashkov/hotel-reservation/utility"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log/slog"
 )
 
@@ -32,6 +34,24 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(hotels)
+}
+
+func (h *HotelHandler) HandleGetHotel(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	hotel, err := h.store.HotelStore.GetHotel(c.Context(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": "hotel not found",
+				"id":      id,
+			})
+		}
+
+		return err
+	}
+
+	return c.JSON(hotel)
 }
 
 func (h *HotelHandler) GetHotelRooms(c *fiber.Ctx) error {
